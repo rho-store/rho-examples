@@ -1,8 +1,0 @@
-streamlit
-watchdog
-rho-store
-openmeteo-requests
-requests-cache
-retry-requests
-googlemaps
-plost
