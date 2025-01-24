@@ -1,4 +1,4 @@
-.PHONY: venv activate install lint format run
+.PHONY: venv activate install lint format run-weatherapp
 
 venv:
 	pip install uv
@@ -12,10 +12,10 @@ install:
 	uv pip install -r requirements.txt
 
 lint:
-	uv run ruff check src/
+	uv run ruff check
 
 format:
-	uv run ruff format src/
+	uv run ruff format
 
 run-weatherapp:
 	streamlit run weatherapp/app.py
