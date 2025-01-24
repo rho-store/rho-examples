@@ -8,6 +8,7 @@ activate:
 	source .venv/bin/activate
 
 install:
+	uv pip install -e .
 	uv pip install -r requirements.txt
 
 lint:
@@ -16,5 +17,5 @@ lint:
 format:
 	uv run ruff format src/
 
-run:
-	streamlit run app.py
+run-weatherapp:
+	streamlit run weatherapp/app.py
