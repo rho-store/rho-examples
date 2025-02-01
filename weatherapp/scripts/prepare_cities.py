@@ -36,10 +36,10 @@ def append_lat_long() -> None:
     # merge coordinates into original dataframe
     lat_long_df = pd.DataFrame(coordinates_df)
     lat_long_df.set_index("index", inplace=True)
-    data.update(lat_long_df)
+    merged_df = data.join(lat_long_df)
 
     # store updated dataframe as new version
-    table.new_version(data=data)
+    table.new_version(data=merged_df)
 
 
 if __name__ == "__main__":
