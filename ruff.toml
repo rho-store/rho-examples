@@ -5,6 +5,8 @@ ignore = [
     "F403", # *-imports
     "ANN002", # annotation for *args,
     "ANN003", # annotation for **kwargs
+    "ANN101", # annotate "self",
+    "ANN102", # annotate "cls",
     "ANN204",  # return type for special functions (__init__),
     "ANN401"  # allow 'Any'
 ]
