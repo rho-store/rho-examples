@@ -9,11 +9,12 @@ geo_client = GeocodeService(google_api_key=st.secrets.get("google_api_key"))
 
 
 def append_lat_long() -> None:
-    table = rho_client.get_table("examples/weather/cities")
+    table_path = "examples/weather/cities"
+    table = rho_client.get_table(table_path)
     data = table.get_df()
 
-    lat_long_data = []
-
+    # collect coordinates for each city
+    coordinates_df = []
     for index, row in data.iterrows():
         city, country = row["city"], row["country"]
         search_string = f"{city}, {country}"
@@ -28,14 +29,17 @@ def append_lat_long() -> None:
             "latitude": lat,
             "longitude": lon,
         }
-        lat_long_data.append(result)
+        coordinates_df.append(result)
+        if (index + 1) % 10 == 0:
+            print(f"Processed {index + 1} of {len(data)} rows")
 
-    lat_long_df = pd.DataFrame(lat_long_data)
+    # merge coordinates into original dataframe
+    lat_long_df = pd.DataFrame(coordinates_df)
     lat_long_df.set_index("index", inplace=True)
     data.update(lat_long_df)
-    table.new_version(
-        data=pd.DataFrame(lat_long_data)
-    )
+
+    # store updated dataframe as new version
+    table.new_version(data=data)
 
 
 if __name__ == "__main__":

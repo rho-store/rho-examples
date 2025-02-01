@@ -5,13 +5,40 @@ import logging
 import pandas as pd
 import plost
 import streamlit as st
+from rho_store import RhoClient
 
-from weatherapp.src.cities import get_cities_df
 from weatherapp.src.temperature import analyze_temperature
 from weatherapp.src.weather import get_daily_temperature_data
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+rho_client = RhoClient(api_key=st.secrets.get("rho_api_key"))
+
+
+@st.cache_data
+def get_cities_df_cached() -> pd.DataFrame:
+    """ Cached function to get cities from Rho """
+    table_path = "examples/weather/cities"
+    cities_table = rho_client.get_table(table_path)
+    return cities_table.get_df()
+
+
+@st.cache_data
+def get_temperature_data_cached(
+        latitude: float,
+        longitude: float,
+        start_date: datetime.date = None,
+        end_date: datetime.date = None
+) -> pd.DataFrame:
+    """ Cached function to get temperature data """
+    return get_daily_temperature_data(
+        latitude=latitude,
+        longitude=longitude,
+        start_date=start_date,
+        end_date=end_date
+    )
 
 
 def render_description() -> None:
@@ -77,10 +104,10 @@ def plot_current_month_distribution(weather_data: pd.DataFrame, city_name: str) 
     )
 
 
-def display_temperature_analysis(result):
+def display_temperature_analysis(result: dict) -> None:
     """Display temperature analysis results in a table."""
     result_items = [{
-        "Title": "Current temperature",
+        "Title": f"Latest temperature ({result['latest_date'].isoformat()})",
         "Result": f"{result['latest_temperature']}°C"
     }, {
         "Title": "Historical Mean",
@@ -108,7 +135,7 @@ def display_temperature_analysis(result):
     st.table(result_items)
 
 
-def main():
+def main() -> None:
     """Main Streamlit app function."""
     st.set_page_config(page_title="Weather Data Analysis", page_icon=":thermometer:", layout="centered")
     st.title("Weather Data Analysis")
@@ -116,7 +143,7 @@ def main():
     render_description()
 
     # Load city data
-    cities_df = get_cities_df()
+    cities_df = get_cities_df_cached()
     cities_names = sorted(cities_df["city"].to_list())
 
     # City selection
