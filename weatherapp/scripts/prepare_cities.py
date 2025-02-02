@@ -14,7 +14,7 @@ def append_lat_long() -> None:
     data = table.get_df()
 
     # collect coordinates for each city
-    coordinates_df = []
+    coordinates = []
     for index, row in data.iterrows():
         city, country = row["city"], row["country"]
         search_string = f"{city}, {country}"
@@ -29,14 +29,14 @@ def append_lat_long() -> None:
             "latitude": lat,
             "longitude": lon,
         }
-        coordinates_df.append(result)
+        coordinates.append(result)
         if (index + 1) % 10 == 0:
-            print(f"Processed {index + 1} of {len(data)} rows")
+            print(f"Processed {index + 1} / {len(data)} rows")
 
-    # merge coordinates into original dataframe
-    lat_long_df = pd.DataFrame(coordinates_df)
-    lat_long_df.set_index("index", inplace=True)
-    merged_df = data.join(lat_long_df)
+    # merge coordinates with original dataframe
+    coordinates_df = pd.DataFrame(coordinates)
+    coordinates_df.set_index("index", inplace=True)
+    merged_df = data.join(coordinates_df)
 
     # store updated dataframe as new version
     table.new_version(data=merged_df)
